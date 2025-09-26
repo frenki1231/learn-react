@@ -1,35 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Component } from 'react';
+import { Result } from './components/Result';
+import Search from './components/Search';
+import type { ApiResponse, SuccessResponse } from './assets/type';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface AppState {
+  inputValue: string;
+  isLoading: boolean;
+  error: string | null;
+  data: SuccessResponse | null;
 }
 
-export default App
+class App extends Component<unknown, AppState> {
+  constructor(props: unknown) {
+    super(props);
+    this.state = { inputValue: '', isLoading: false, error: null, data: null };
+  }
+
+  handleSearch = async () => {
+    this.setState((prev) => ({ ...prev, isLoading: true }));
+    localStorage.setItem('inputValue', this.state.inputValue);
+    const response = await fetch(
+      `https://rickandmortyapi.com/api/character/?name=${this.state.inputValue}`
+    );
+    const data = (await response.json()) as ApiResponse;
+    if ('error' in data) {
+      this.setState((prev) => ({
+        ...prev,
+        error: data.error,
+        data: null,
+        isLoading: false,
+      }));
+    } else {
+      this.setState((prev) => ({
+        ...prev,
+        error: null,
+        data,
+        isLoading: false,
+      }));
+    }
+  };
+
+  handleInputValue = (value: string) => {
+    this.setState({ inputValue: value });
+  };
+
+  render() {
+    return (
+      <>
+        <Search
+          handleSearch={this.handleSearch}
+          handleInputValue={this.handleInputValue}
+        />
+        {this.state.isLoading && <div>Loading...</div>}
+        <Result data={this.state.data} error={this.state.error} />
+      </>
+    );
+  }
+}
+
+export default App;
