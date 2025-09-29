@@ -10,34 +10,53 @@ interface AppState {
   data: SuccessResponse | null;
 }
 
-class App extends Component<unknown, AppState> {
-  constructor(props: unknown) {
+class App extends Component<{}, AppState> {
+  constructor(props: {}) {
     super(props);
     this.state = { inputValue: '', isLoading: false, error: null, data: null };
   }
 
-  handleSearch = async () => {
+  componentDidMount(): void {
+    this.setState({ inputValue: localStorage.getItem('inputValue') ?? '' });
     this.setState((prev) => ({ ...prev, isLoading: true }));
-    localStorage.setItem('inputValue', this.state.inputValue);
-    const response = await fetch(
-      `https://rickandmortyapi.com/api/character/?name=${this.state.inputValue}`
-    );
-    const data = (await response.json()) as ApiResponse;
-    if ('error' in data) {
+    this.doRequest();
+  }
+
+  doRequest = async () => {
+    try {
+      const response = await fetch(
+        `https://rickandmortyapi.com/api/character/?name=${this.state.inputValue}`
+      );
+      const data: ApiResponse = await response.json();
+      if ('error' in data) {
+        this.setState((prev) => ({
+          ...prev,
+          error: data.error,
+          data: null,
+          isLoading: false,
+        }));
+      } else {
+        this.setState((prev) => ({
+          ...prev,
+          error: null,
+          data,
+          isLoading: false,
+        }));
+      }
+    } catch (_) {
       this.setState((prev) => ({
         ...prev,
-        error: data.error,
+        error: 'Something went wrong. Please try again later.',
         data: null,
         isLoading: false,
       }));
-    } else {
-      this.setState((prev) => ({
-        ...prev,
-        error: null,
-        data,
-        isLoading: false,
-      }));
     }
+  };
+
+  handleSearch = async () => {
+    this.setState((prev) => ({ ...prev, isLoading: true }));
+    localStorage.setItem('inputValue', this.state.inputValue);
+    await this.doRequest();
   };
 
   handleInputValue = (value: string) => {
@@ -50,6 +69,7 @@ class App extends Component<unknown, AppState> {
         <Search
           handleSearch={this.handleSearch}
           handleInputValue={this.handleInputValue}
+          isLoading={this.state.isLoading}
         />
         {this.state.isLoading && <div>Loading...</div>}
         <Result data={this.state.data} error={this.state.error} />
