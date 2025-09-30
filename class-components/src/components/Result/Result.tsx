@@ -1,6 +1,6 @@
 import { Component } from 'react';
-import type { SuccessResponse } from '../assets/type';
-import ListItems from './ListItems';
+import type { SuccessResponse } from '../../assets/type';
+import ListItems from '../ListItems/ListItems';
 
 type ResultProps = {
   data: SuccessResponse | null;

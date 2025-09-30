@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Result } from './components/Result';
+import { Result } from './components/Result/Result';
 import Search from './components/Search';
 import type { ApiResponse, SuccessResponse } from './assets/type';
 

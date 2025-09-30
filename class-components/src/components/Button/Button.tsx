@@ -3,6 +3,7 @@ import { Component } from 'react';
 interface ButtonProps {
   handleSearch: () => void;
   isLoading: boolean;
+  children: React.ReactNode;
 }
 
 export class Button extends Component<ButtonProps> {
@@ -12,7 +13,7 @@ export class Button extends Component<ButtonProps> {
   render() {
     return (
       <button onClick={this.handleClick} disabled={this.props.isLoading}>
-        Search
+        {this.props.children}
       </button>
     );
   }

@@ -1,4 +1,4 @@
-import type { ItemType } from '../assets/type';
+import type { ItemType } from '../../assets/type';
 
 export default function Item(props: { item: ItemType }) {
   return (

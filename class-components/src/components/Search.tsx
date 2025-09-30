@@ -1,5 +1,5 @@
-import { Button } from './Button';
-import { Input } from './Input';
+import { Button } from './Button/Button';
+import { Input } from './Input/Input';
 
 export default function Search({
   handleSearch,
@@ -13,7 +13,9 @@ export default function Search({
   return (
     <div>
       <Input handleInputValue={handleInputValue} />
-      <Button handleSearch={handleSearch} isLoading={isLoading} />
+      <Button handleSearch={handleSearch} isLoading={isLoading}>
+        Search
+      </Button>
     </div>
   );
 }
